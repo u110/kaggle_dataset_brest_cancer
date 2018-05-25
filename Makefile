@@ -5,3 +5,6 @@ env:
 
 pip:
 	env/bin/pip install -r requirements.txt
+
+run-jupyter:
+	env/bin/jupyter notebook
