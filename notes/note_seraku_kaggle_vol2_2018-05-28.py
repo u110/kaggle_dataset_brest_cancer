@@ -406,10 +406,6 @@ sns.heatmap(x.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 # # Feature Selection and Random Forest Classification
 # Today our purpuse is to try new cocktails. For example, we are finaly in the pub and we want to drink different tastes. Therefore, we need to compare ingredients of drinks. If one of them includes lemon, after drinking it we need to eliminate other drinks which includes lemon so as to experience very different tastes.
 
-# 変数選択のフローをカクテルを飲み比べする例えに。
-# 
-# 実際の変数選択も、ある変量を加えてCVの結果みて、その変数を除いて再度CVの結果出して〜を繰り返すので。
-
 # In this part we will select feature with different methods that are feature selection with correlation, univariate feature selection, recursive feature elimination (RFE), recursive feature elimination with cross validation (RFECV) and tree based feature selection. We will use random forest classification in order to train our model and predict. 
 
 # ## 1) Feature selection with correlation and random forest classification
@@ -420,8 +416,6 @@ sns.heatmap(x.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 # 
 # 
 # 
-
-# 相関がある変数間で、ひとまず1つだけ選び、他の相関のある変数は除外してデータを用意し直す。
 
 # In[ ]:
 
@@ -629,8 +623,6 @@ plt.ylabel('explained_variance_ratio_')
 
 
 # According to variance ration, 3 component can be chosen.
-
-# この図の見方はまだ良くわからず。
 
 # # Conclusion
 # Shortly, I tried to show importance of feature selection and data visualization. 
