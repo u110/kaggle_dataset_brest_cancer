@@ -1,4 +1,4 @@
-setup: env pip
+setup: env pip config-jupyter
 
 env:
 	python -m virtualenv env -p python3
@@ -6,17 +6,19 @@ env:
 pip:
 	env/bin/pip install -r requirements.txt
 
-run-jupyter: jupyter-config nb-extensions
+run-jupyter:
 	env/bin/jupyter notebook
 
-nb-extensions: ~/.jupyter/jupyter_notebook_config.py
+nb-extensions:
 	env/bin/jupyter contrib nbextension install --user
 
-jupyter-config: ~/.jupyter/jupyter_notebook_config.py
+config-jupyter: nb-extensions backup-current-config
 	cp conf/jupyter_notebook_config.py ~/.jupyter/
 
-~/.jupyter/jupyter_notebook_config.py: ~/.jupyter
-	mv ~/.jupyter/jupyter_notebook_config.py{,.origin}
+backup-current-config: ~/.jupyter/jupyter_notebook_config.py.BAK
+
+~/.jupyter/jupyter_notebook_config.py.BAK: ~/.jupyter
+	-mv -n ~/.jupyter/jupyter_notebook_config.py{,.BAK}
 
 ~/.jupyter:
 	mkdir ~/.jupyter
