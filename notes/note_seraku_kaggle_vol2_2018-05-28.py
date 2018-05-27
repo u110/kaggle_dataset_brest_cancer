@@ -52,7 +52,7 @@
 
 # # Data Analysis
 
-# In[1]:
+# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -76,7 +76,7 @@ print(check_output(["ls", "../input"]).decode("utf8"))
 # Any results you write to the current directory are saved as output.
 
 
-# In[2]:
+# In[ ]:
 
 
 data = pd.read_csv('../input/data.csv')
@@ -88,7 +88,7 @@ data = pd.read_csv('../input/data.csv')
 # 【訳】 特徴量選択、抽出、そして分類などを行う前にまず基本的なデータ分析から始めます。
 # データの特徴量を見てみましょう。
 
-# In[3]:
+# In[ ]:
 
 
 data.head()  # head method show only first 5 rows
@@ -133,7 +133,7 @@ data.head()  # head method show only first 5 rows
 # 
 # 
 
-# In[4]:
+# In[ ]:
 
 
 # feature names as a list
@@ -141,7 +141,7 @@ col = data.columns       # .columns gives columns names in data
 print(col)
 
 
-# In[5]:
+# In[ ]:
 
 
 # y includes our labels and x includes our features
@@ -151,14 +151,14 @@ x = data.drop(list,axis = 1 )
 x.head()
 
 
-# In[6]:
+# In[ ]:
 
 
 # 個人的には .T関数で転置すると表示が縦になるので見やすい場合もあります。
 # x.head().T
 
 
-# In[7]:
+# In[ ]:
 
 
 ax = sns.countplot(y,label="Count")       # M = 212, B = 357
@@ -184,13 +184,13 @@ print('Number of Malignant : ',M)
 # ここでもここの特徴量について知る必要は無いという意見でしたが、特徴量を選ぶタイミングでは意味を知っておいたほうが良いと思っています。
 # もしかしたら、今回のノートでは手法の紹介と割り切っているためかもしれません。参加者のみなさんと議論したいところ。
 
-# In[8]:
+# In[ ]:
 
 
 x.describe()
 
 
-# In[9]:
+# In[ ]:
 
 
 # これも転置させると全部見れる。
@@ -209,7 +209,7 @@ x.describe()
 # 【訳】バイオリン、スワームプロットを作成する前に、正規化や標準化が必要です。 特徴量の値の間の差はグラフで観察するのが非常に大きすぎるためです。
 # 私は3つのグループに特徴量をプロットし、各グループには10つの特徴量が含まれています。
 
-# In[10]:
+# In[ ]:
 
 
 # first ten features
@@ -225,7 +225,7 @@ sns.violinplot(x="features", y="value", hue="diagnosis", data=data,split=True, i
 plt.xticks(rotation=90);
 
 
-# In[11]:
+# In[ ]:
 
 
 # それぞれの処理がわかりにくいかもなので、個別に結果を見てみる。
@@ -249,7 +249,7 @@ data
 
 # Lets interpret the plot above together. For example, in **texture_mean** feature, median of the *Malignant* and *Benign* looks like separated so it can be good for classification. However, in **fractal_dimension_mean** feature,  median of the *Malignant* and *Benign* does not looks like separated so it does not gives good information for classification.
 
-# In[12]:
+# In[ ]:
 
 
 # Second ten features
@@ -262,7 +262,7 @@ sns.violinplot(x="features", y="value", hue="diagnosis", data=data,split=True, i
 plt.xticks(rotation=90)
 
 
-# In[13]:
+# In[ ]:
 
 
 # Second ten features
@@ -296,7 +296,7 @@ plt.xticks(rotation=90)
 # 
 # 「まだ素性を選んでいるわけでないよ、データを眺めてアイデアを探しているところ」
 
-# In[14]:
+# In[ ]:
 
 
 sns.jointplot(x.loc[:,'concavity_worst'], x.loc[:,'concave points_worst'], kind="regg", color="#ce1414")
@@ -309,7 +309,7 @@ sns.jointplot(x.loc[:,'concavity_worst'], x.loc[:,'concave points_worst'], kind=
 # 
 # 
 
-# In[15]:
+# In[ ]:
 
 
 sns.set(style="white")
@@ -326,7 +326,7 @@ g.map_diag(sns.kdeplot, lw=3);
 
 # 日本語だと蜂群図(bee swarm plot)
 
-# In[16]:
+# In[ ]:
 
 
 sns.set(style="whitegrid", palette="muted")
@@ -344,7 +344,7 @@ sns.swarmplot(x="features", y="value", hue="diagnosis", data=data)
 plt.xticks(rotation=90)
 
 
-# In[17]:
+# In[ ]:
 
 
 data = pd.concat([y,data_n_2.iloc[:,10:20]],axis=1)
@@ -356,7 +356,7 @@ sns.swarmplot(x="features", y="value", hue="diagnosis", data=data)
 plt.xticks(rotation=90)
 
 
-# In[18]:
+# In[ ]:
 
 
 data = pd.concat([y,data_n_2.iloc[:,20:31]],axis=1)
@@ -378,7 +378,7 @@ print("swarm plot time: ", toc-tic ," s")
 
 # 相関係数を色分けしてヒートマップとしたもの。これも昔からよく使われている。
 
-# In[19]:
+# In[ ]:
 
 
 #correlation map
@@ -408,7 +408,7 @@ sns.heatmap(x.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 
 # 相関がある変数間で、ひとまず1つだけ選び、他の相関のある変数は除外してデータを用意し直す。
 
-# In[20]:
+# In[ ]:
 
 
 drop_list1 = ['perimeter_mean','radius_mean','compactness_mean','concave points_mean','radius_se','perimeter_se','radius_worst','perimeter_worst','compactness_worst','concave points_worst','compactness_se','concave points_se','texture_worst','area_worst']
@@ -418,7 +418,7 @@ x_1.head()
 
 # After drop correlated features, as it can be seen in below correlation matrix, there are no more correlated features. Actually, I know and you see there is correlation value 0.9 but lets see together what happen if we do not drop it.
 
-# In[21]:
+# In[ ]:
 
 
 #correlation map
@@ -428,7 +428,7 @@ sns.heatmap(x_1.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 
 # Well, we choose our features but **did we choose correctly ?** Lets use random forest and find accuracy according to chosen features.
 
-# In[22]:
+# In[ ]:
 
 
 from sklearn.model_selection import train_test_split
@@ -458,7 +458,7 @@ sns.heatmap(cm,annot=True,fmt="d")
 
 # In this method we need to choose how many features we will use. For example, will k (number of features) be 5 or 10 or 15? The answer is only trying or intuitively. I do not try all combinations but I only choose k = 5 and find best 5 features.
 
-# In[23]:
+# In[ ]:
 
 
 from sklearn.feature_selection import SelectKBest
@@ -467,7 +467,7 @@ from sklearn.feature_selection import chi2
 select_feature = SelectKBest(chi2, k=5).fit(x_train, y_train)
 
 
-# In[24]:
+# In[ ]:
 
 
 print('Score list:', select_feature.scores_)
@@ -476,7 +476,7 @@ print('Feature list:', x_train.columns)
 
 # Best 5 feature to classify is that **area_mean, area_se, texture_mean, concavity_worst and concavity_mean**. So lets se what happens if we use only these best scored 5 feature.
 
-# In[25]:
+# In[ ]:
 
 
 x_train_2 = select_feature.transform(x_train)
@@ -499,7 +499,7 @@ sns.heatmap(cm_2,annot=True,fmt="d")
 
 # Like previous method, we will use 5 features. However, which 5 features will we use ? We will choose them with RFE method.
 
-# In[26]:
+# In[ ]:
 
 
 from sklearn.feature_selection import RFE
@@ -509,7 +509,7 @@ rfe = RFE(estimator=clf_rf_3, n_features_to_select=5, step=1)
 rfe = rfe.fit(x_train, y_train)
 
 
-# In[27]:
+# In[ ]:
 
 
 print('Chosen best 5 feature by rfe:',x_train.columns[rfe.support_])
@@ -521,7 +521,7 @@ print('Chosen best 5 feature by rfe:',x_train.columns[rfe.support_])
 # <http://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFECV.html>
 # Now we will not only **find best features** but we also find **how many features do we need** for best accuracy.
 
-# In[28]:
+# In[ ]:
 
 
 from sklearn.feature_selection import RFECV
@@ -538,7 +538,7 @@ print('Best features :', x_train.columns[rfecv.support_])
 # Finally, we find best 11 features that are **texture_mean, area_mean, concavity_mean, texture_se, area_se, concavity_se, symmetry_se, smoothness_worst, concavity_worst, symmetry_worst and fractal_dimension_worst** for best classification. Lets look at best accuracy with plot.
 # 
 
-# In[29]:
+# In[ ]:
 
 
 # Plot number of features VS. cross-validation scores
@@ -557,7 +557,7 @@ plt.show()
 # In random forest classification method there is a **feature_importances_** attributes that is the feature importances (the higher, the more important the feature). **!!! To use feature_importance method, in training data there should not be correlated features. Random forest choose randomly at each iteration, therefore sequence of feature importance list can change.**
 # 
 
-# In[30]:
+# In[ ]:
 
 
 clf_rf_5 = RandomForestClassifier()      
@@ -591,7 +591,7 @@ plt.show()
 # We will use principle component analysis (PCA) for feature extraction. Before PCA, we need to normalize data for better performance of PCA.
 #  
 
-# In[31]:
+# In[ ]:
 
 
 # split data train 70 % and test 30 %
