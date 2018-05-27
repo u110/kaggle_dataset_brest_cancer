@@ -40,13 +40,11 @@
 # 
 # **それではデータの分析をお楽しみください！！！**
 # 
-# 
 # 【メモ】 
 # 
 # > このデータ分析レポートでは、通常、私は他のカーネルとは違うものとして、
 # 
 # 一般的なKernelはコンペのスコアを上げるためのTIPS、モデルの検証などがほとんどのため、
-# 
 # 今回のコンペのないデータセットと区別していると思います。
 # 
 
@@ -145,9 +143,9 @@ print(col)
 
 
 # y includes our labels and x includes our features
-y = data.diagnosis # M or B 
-list = ['Unnamed: 32','id','diagnosis']
-x = data.drop(list,axis = 1 )
+y = data.diagnosis   # M or B 
+list = ['Unnamed: 32','id','diagnosis']   # 除外したい対象の列名
+x = data.drop(list,axis = 1 )   # listという配列をもとに除外
 x.head()
 
 
@@ -202,12 +200,24 @@ x.describe()
 
 # 【訳】 可視化
 # 
-# データを視覚化するために、他のカーネルでは使用されていないseabornプロットを使用して、多数の描画方法について紹介します。 私がよく使っているのは、主にバイオリン図とスワームプロット（蜂群図）です。 我々は特徴量選択をしているわけでないことに注意してください、我々はパブのドアで飲み物のリストを眺めているように、データを知ろうとしていると思ってください。
+# データを視覚化するために、他のカーネルでは使用されていないseabornプロットを使用して、多数の描画方法について紹介します。 私がよく使っているのは、主にバイオリン図とスワームプロット（蜂群図）です。 我々は特徴量選択をしているわけでないことに注意してください、我々はパブのドアで飲み物のリストを眺めているように、データを知ろうとしているところです。
 
 # Before violin and swarm plot we need to normalization or standirdization. Because differences between values of features are very high to observe on plot. I plot features in 3 group and each group includes 10 features to observe better.
 
-# 【訳】バイオリン、スワームプロットを作成する前に、正規化や標準化が必要です。 特徴量の値の間の差はグラフで観察するのが非常に大きすぎるためです。
+# 【訳】バイオリン、スワームプロットを作成する前に、正規化(normalization)や標準化(standardization)が必要です。 特徴量の値の間の差はグラフで観察するのが非常に大きすぎるためです。
 # 私は3つのグループに特徴量をプロットし、各グループには10つの特徴量が含まれています。
+
+# 【メモ】 正規化、標準化について
+# 
+# 単位や次元が違うことで、数量をそのまま比較することができないものを代表値などで割るなどして比較できるようにすること。
+# 
+# 以下では
+# 
+# $$
+# z = \frac{X - \mu}{\sigma}
+# $$
+# 
+# という式で平均0標準偏差1の分布に変換しています。
 
 # In[ ]:
 
@@ -225,29 +235,29 @@ sns.violinplot(x="features", y="value", hue="diagnosis", data=data,split=True, i
 plt.xticks(rotation=90);
 
 
+# Lets interpret the plot above together. For example, in **texture_mean** feature, median of the *Malignant* and *Benign* looks like separated so it can be good for classification. However, in **fractal_dimension_mean** feature,  median of the *Malignant* and *Benign* does not looks like separated so it does not gives good information for classification.
+
+# 【訳】　上記のプロットを一緒に解釈しましょう。 たとえば、**texture_mean** では、 *悪性腫瘍(Malignant)* 　と　*良性腫瘍(Benign)*　の中央値が分離しているように見えるため、分類に適していると言えそうです。 しかし、 *fractal_dimension_mean* は、悪性および良性の中央値は分離されていないように見えるので、分類のための良い情報は得られていません。
+
+# 【メモ】 上のコードは今までの中では長めのコードになるので、順を追って見てみます。
+
 # In[ ]:
 
 
-# それぞれの処理がわかりにくいかもなので、個別に結果を見てみる。
-# first ten features
-data_dia = y
+data_dia = y  #  y = data.diagnosis
 data = x
 data_n_2 = (data - data.mean()) / (data.std())              # standardization
 data = pd.concat([y,data_n_2.iloc[:,0:10]],axis=1)
-data = pd.melt(data.head(),id_vars="diagnosis",
+
+
+# 列が横長になっているものを列名を持つ列を追加した上で縦長に整形(ここでは前半3行のデータのみ使って整形しています)
+data = pd.melt(data.head(3),id_vars="diagnosis",
                     var_name="features",
                     value_name='value')
-"""
-plt.figure(figsize=(10,10))
-sns.violinplot(x="features", y="value", hue="diagnosis", data=data,split=True, inner="quart")
-plt.xticks(rotation=90)
-"""
-# データを縦長にもたせることでseabornのプロットに適した形に整形している。matplotlibやRのggplot2なんかも同じような形で扱うことが多いと思います。
-# 項目数が多いので、3つに分けてプロットしている
+
+# データを縦長にもたせseabornのプロットに適した形に整形している。
 data
 
-
-# Lets interpret the plot above together. For example, in **texture_mean** feature, median of the *Malignant* and *Benign* looks like separated so it can be good for classification. However, in **fractal_dimension_mean** feature,  median of the *Malignant* and *Benign* does not looks like separated so it does not gives good information for classification.
 
 # In[ ]:
 
@@ -278,36 +288,37 @@ plt.xticks(rotation=90)
 # Lets interpret one more thing about plot above, variable of **concavity_worst** and **concave point_worst** looks like similar but how can we decide whether they are correlated with each other or not.
 # (Not always true but, basically if the features are correlated with each other we can drop one of them)
 
-# > (Not always true but, basically if the features are correlated with each other we can drop one of them)
+# 【訳】 上のプロットについてもう一つ解釈すると、 **concavity_worst** と **convex_worst** は同様のように見えますが、どうやって相関しているかどうかを判断できえうしょうか。 （絶対ではないが、基本的に特徴量が相関が強い場合、その特徴量の1つを削除できます）
 # 
-# この意味は重回帰分析の分野の用語としてはマルチコとか多重共線性のついて述べているのだと思う。
-# モデルの構築（パラメタ推定）などがうまく行かなかったり、予測結果の精度が悪かったりしてしまう。
+# 【メモ】
 # 
-# そもそも分類を目的としている場合に、各説明変数は独立変数であるという仮定を置くパターンが多いので
-# 説明変数間で強い相関がある＝独立ではない　となるとそもそもの仮定が矛盾してしまう。
+# 機械学習、統計モデルでは、各説明変数は独立変数であるという仮定を置くので、
+# 説明変数間で強い相関がある＝独立ではない　となるとそもそもの仮定が間違ってしまいます。
+# 強い相関のある特徴量を含んだままモデルの構築（パラメタ推定）を行うと、安定しなかったり、性能が悪くなってしまうので注意が必要です。
+# 詳しくは　「マルチコ」、「多重共線性」というワードで調べてみてください。
 
 # In order to compare two features deeper, lets use joint plot. Look at this in joint plot below, it is really correlated.
-#  Pearsonr value is correlation value and 1 is the highest. Therefore, 0.86 is looks enough to say that they are correlated. 
-# Do not forget, we are not choosing features yet, we are just looking to have an idea about them.
+#  Pearsonr value is correlation value and 1 is the highest. Therefore, 0.86 is looks enough to say that they are correlated. Do not forget, we are not choosing features yet, we are just looking to have an idea about them.
 
-# Pearsonr value: たぶん決定係数のこと。 0-1の間に定まる値。1に近いほど、相関があると言える。
-# 
-# 言及しているとおり0.8は強い相関があると言える。
-# 
-# 「まだ素性を選んでいるわけでないよ、データを眺めてアイデアを探しているところ」
+# 【訳】 この2つの特徴量をより深く比較するために、ジョイントプロットを使用できます。 下のジョイントプロットを見てみるとやはり強い相関を示しています。 ピアソン相関係数は、1が最も高い。 したがって、0.86は十分相関があると言えます。 私たちはまだ特徴量選択をしていないことを忘れないでください。私たちは特徴量選択のためのアイデアを探している段階です。
 
 # In[ ]:
 
 
-sns.jointplot(x.loc[:,'concavity_worst'], x.loc[:,'concave points_worst'], kind="regg", color="#ce1414")
+import warnings
+warnings.filterwarnings('ignore')  # 最新でパッチがあたるので今は無視 https://github.com/mwaskom/seaborn/issues/1392
+
+sns.jointplot(x=x.loc[:,'concavity_worst'], y=x.loc[:,'concave points_worst'], kind="reg", color="#ce1414");
 
 
 # What about three or more feauture comparision ? For this purpose we can use pair grid plot. Also it seems very cool :)
 # And we discover one more thing **radius_worst**, **perimeter_worst** and **area_worst** are correlated as it can be seen pair grid plot. We definetely use these discoveries for feature selection.
 
-# pair grid plot: 日本語だと散布図行列って書かれてたりするはず。
+# 【訳】 3つ以上の特徴量の比較はにはペアグリッドプロットを使用することができます。 それは非常にクールだ:)
 # 
-# 
+# 私たちは新たに **radius_worst**、 **perimeter_worst** と **area_worst** について相関があることを発見し、
+# ペアグリッドプロットとでも確認できます。 
+# 我々はこれらの発見を特徴選択のために使用します。
 
 # In[ ]:
 
@@ -315,16 +326,18 @@ sns.jointplot(x.loc[:,'concavity_worst'], x.loc[:,'concave points_worst'], kind=
 sns.set(style="white")
 df = x.loc[:,['radius_worst','perimeter_worst','area_worst']]
 g = sns.PairGrid(df, diag_sharey=False)
-g.map_lower(sns.kdeplot, cmap="Blues_d")
-g.map_upper(plt.scatter)
-g.map_diag(sns.kdeplot, lw=3);
+g.map_lower(sns.kdeplot, cmap="Blues_d")  # 下部を2変量のカーネル密度推定値の描画
+g.map_upper(plt.scatter)  # 上部を散布図行列の描画
+g.map_diag(sns.kdeplot, lw=3)  # 対角要素を　1変量のカーネル密度推定値の描画
 
 
 # Up to this point, we make some comments and discoveries on data already. If you like what we did, I am sure swarm plot will open the pub's door :) 
 
 # In swarm plot, I will do three part like violin plot not to make plot very complex appearance
 
-# 日本語だと蜂群図(bee swarm plot)
+# 【訳】　ここまで、データに関するコメントや発見を行ってきました。 私たちがしたことが好きなら、私はスウォームプロットがパブのドアを開けると確信しています:)
+# 
+# スウォームプロット（蜂群図）でも、繁雑な描画にならないように、バイオリンプロット同様に3つに分けて行います。
 
 # In[ ]:
 
@@ -372,11 +385,11 @@ print("swarm plot time: ", toc-tic ," s")
 
 # They looks cool right. And you can see variance more clear. Let me ask you a question, **in these three plots which feature looks like more clear in terms of classification.** In my opinion **area_worst** in last swarm plot looks like malignant and benign are seprated not totaly but mostly. Hovewer, **smoothness_se** in swarm plot 2 looks like malignant and benign are mixed so it is hard to classfy while using this feature.
 
-# ビースワームでこんな見方ができるのか。。たしかに散布図行列見るよりも情報が絞られててよさ。
+# 【訳】 クールだね。 そして、あなたは分散をより明確に見えているでしょう。 質問をしてみましょう。 **これらの3つのプロットの中で、分類を行う上で有効な特徴量はどれでしょう?** 私の意見では最後の描画にある **area_worst** はほぼうまく分離しているように見えます。 一方二番目の描画に含まれている **smoothness_se**　については良性、悪性が混じっているため、この特徴量を利用してもクラス分けは難しいでしょう。
 
 # **What if we want to observe all correlation between features?** Yes, you are right. The answer is heatmap that is old but powerful plot method.
 
-# 相関係数を色分けしてヒートマップとしたもの。これも昔からよく使われている。
+# 【訳】　すべての特徴量について相関を見たい場合、どうすればよいでしょう？ はい、正解です。答えはヒートマップを使います。これは昔からある強力な描画方法です。
 
 # In[ ]:
 
@@ -387,6 +400,8 @@ sns.heatmap(x.corr(), annot=True, linewidths=.5, fmt= '.1f',ax=ax)
 
 
 # Well, finaly we are in the pub and lets choose our drinks at feature selection part while using heatmap(correlation matrix).
+
+# 【訳】 ここでやっと私たちはパブに入ったので、相関行列のヒートマップを使い、後半の特徴量選択パートで飲み物を選びましょう。
 
 # # Feature Selection and Random Forest Classification
 # Today our purpuse is to try new cocktails. For example, we are finaly in the pub and we want to drink different tastes. Therefore, we need to compare ingredients of drinks. If one of them includes lemon, after drinking it we need to eliminate other drinks which includes lemon so as to experience very different tastes.
